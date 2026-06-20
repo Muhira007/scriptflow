@@ -2,8 +2,20 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  Link2, Sparkles, Clock, Users, Type, Copy, CheckCircle2,
-  Loader2, PlayCircle, Image as ImageIcon, Type as TextIcon, UploadCloud, Trash2, AlertCircle
+  Link2,
+  Sparkles,
+  Clock,
+  Users,
+  Type,
+  Copy,
+  CheckCircle2,
+  Loader2,
+  PlayCircle,
+  Image as ImageIcon,
+  Type as TextIcon,
+  UploadCloud,
+  Trash2,
+  AlertCircle,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -28,7 +40,9 @@ export default function GeneratorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [parsedResult, setParsedResult] = useState<ParsedResult | null>(null);
-  const [activeTab, setActiveTab] = useState<"versionA" | "versionB" | "caption">("versionA");
+  const [activeTab, setActiveTab] = useState<
+    "versionA" | "versionB" | "caption"
+  >("versionA");
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showTopupModal, setShowTopupModal] = useState(false);
@@ -87,8 +101,8 @@ export default function GeneratorPage() {
   useEffect(() => {
     if (result) {
       try {
-        const startIdx = result.indexOf('{');
-        const endIdx = result.lastIndexOf('}');
+        const startIdx = result.indexOf("{");
+        const endIdx = result.lastIndexOf("}");
 
         if (startIdx !== -1) {
           // Try standard JSON parsing first if we have closing brace
@@ -109,36 +123,44 @@ export default function GeneratorPage() {
           const extractArray = (key: string) => {
             const keyIndex = result.indexOf(`"${key}"`);
             if (keyIndex === -1) return [];
-            
+
             const afterKey = result.substring(keyIndex + key.length + 2);
-            const startBracket = afterKey.indexOf('[');
+            const startBracket = afterKey.indexOf("[");
             if (startBracket === -1) return [];
-            
+
             const arrayContent = afterKey.substring(startBracket + 1);
-            
+
             const matches: string[] = [];
             const stringRegex = /"([^"\\]*(?:\\.[^"\\]*)*)"/g;
             let match;
             let lastIndex = 0;
             while ((match = stringRegex.exec(arrayContent)) !== null) {
-              matches.push(match[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'));
+              matches.push(match[1].replace(/\\"/g, '"').replace(/\\n/g, "\n"));
               lastIndex = stringRegex.lastIndex;
             }
-            
+
             // Check for unclosed string at the end of the array
             const remaining = arrayContent.substring(lastIndex).trim();
-            if (remaining.startsWith(',')) {
+            if (remaining.startsWith(",")) {
               const afterComma = remaining.substring(1).trim();
               if (afterComma.startsWith('"')) {
-                const unclosedMatch = afterComma.match(/^"([^"\\]*(?:\\.[^"\\]*)*)$/);
+                const unclosedMatch = afterComma.match(
+                  /^"([^"\\]*(?:\\.[^"\\]*)*)$/,
+                );
                 if (unclosedMatch) {
-                  matches.push(unclosedMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'));
+                  matches.push(
+                    unclosedMatch[1].replace(/\\"/g, '"').replace(/\\n/g, "\n"),
+                  );
                 }
               }
             } else if (remaining.startsWith('"')) {
-              const unclosedMatch = remaining.match(/^"([^"\\]*(?:\\.[^"\\]*)*)$/);
+              const unclosedMatch = remaining.match(
+                /^"([^"\\]*(?:\\.[^"\\]*)*)$/,
+              );
               if (unclosedMatch) {
-                matches.push(unclosedMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n'));
+                matches.push(
+                  unclosedMatch[1].replace(/\\"/g, '"').replace(/\\n/g, "\n"),
+                );
               }
             }
             return matches;
@@ -148,7 +170,11 @@ export default function GeneratorPage() {
           const versionB = extractArray("versionB");
           const caption = extractArray("caption");
 
-          if (versionA.length > 0 || versionB.length > 0 || caption.length > 0) {
+          if (
+            versionA.length > 0 ||
+            versionB.length > 0 ||
+            caption.length > 0
+          ) {
             setParsedResult({
               versionA: versionA.length > 0 ? versionA : undefined,
               versionB: versionB.length > 0 ? versionB : undefined,
@@ -207,7 +233,11 @@ export default function GeneratorPage() {
       router.refresh(); // Refresh layout so Sidebar picks up the new credits balance
     } catch (err: any) {
       const msg = err.message || "";
-      if (msg.toLowerCase().includes("credit") || msg.toLowerCase().includes("kredit") || msg.toLowerCase().includes("top up")) {
+      if (
+        msg.toLowerCase().includes("credit") ||
+        msg.toLowerCase().includes("kredit") ||
+        msg.toLowerCase().includes("top up")
+      ) {
         setShowTopupModal(true);
       } else {
         setErrorMsg(msg);
@@ -220,23 +250,23 @@ export default function GeneratorPage() {
   const getActiveText = () => {
     if (!result) return "";
     if (!parsedResult) return result;
-    
+
     let textObj: any = "";
     if (activeTab === "versionA") textObj = parsedResult.versionA;
     else if (activeTab === "versionB") textObj = parsedResult.versionB;
     else if (activeTab === "caption") textObj = parsedResult.caption;
-    
+
     if (!textObj) return "";
-    
+
     let text = "";
     if (Array.isArray(textObj)) {
       text = textObj.join("\n\n");
     } else {
       text = String(textObj);
     }
-    
+
     // Fix escaped newlines sometimes returned by AI in JSON
-    return text.replace(/\\n/g, '\n');
+    return text.replace(/\\n/g, "\n");
   };
 
   const handleCopyCaption = () => {
@@ -249,9 +279,12 @@ export default function GeneratorPage() {
 
   const handleCopyText = () => {
     // If active tab is versionB, copy B. Otherwise, default to A.
-    const textToCopy = activeTab === "versionB"
-      ? parsedResult?.versionB
-      : (activeTab === "caption" ? getActiveText() : parsedResult?.versionA);
+    const textToCopy =
+      activeTab === "versionB"
+        ? parsedResult?.versionB
+        : activeTab === "caption"
+          ? getActiveText()
+          : parsedResult?.versionA;
 
     const text = textToCopy || getActiveText();
 
@@ -276,7 +309,9 @@ export default function GeneratorPage() {
   };
 
   // Utils
-  const wordCount = getActiveText().trim() ? getActiveText().trim().split(/\s+/).length : 0;
+  const wordCount = getActiveText().trim()
+    ? getActiveText().trim().split(/\s+/).length
+    : 0;
   // Avg reading speed 200 words per minute -> 3.3 words per second
   const readingTimeSecs = Math.ceil(wordCount / 3.3);
 
@@ -284,16 +319,17 @@ export default function GeneratorPage() {
     <div className="min-h-full lg:h-full flex flex-col lg:flex-row gap-8 animate-fade-in-up">
       {/* Left Column - Input Form */}
       <div className="w-full lg:w-1/2 flex flex-col gap-6 lg:overflow-y-auto lg:pr-2 custom-scrollbar pb-8">
-
         {errorMsg && (
           <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-xl text-sm font-medium">
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleGenerate} className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-lg flex-1">
+        <form
+          onSubmit={handleGenerate}
+          className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-lg flex-1"
+        >
           <div className="space-y-6">
-
             {/* 1. SUMBER PRODUK */}
             <div className="space-y-4">
               <label className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -305,8 +341,11 @@ export default function GeneratorPage() {
                 <button
                   type="button"
                   onClick={() => setSourceTab("name")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${sourceTab === "name" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
+                    sourceTab === "name"
+                      ? "bg-background shadow-sm text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <TextIcon className="w-4 h-4" />
                   Nama Produk
@@ -314,8 +353,11 @@ export default function GeneratorPage() {
                 <button
                   type="button"
                   onClick={() => setSourceTab("url")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${sourceTab === "url" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
+                    sourceTab === "url"
+                      ? "bg-background shadow-sm text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Link2 className="w-4 h-4" />
                   Link URL
@@ -323,8 +365,11 @@ export default function GeneratorPage() {
                 <button
                   type="button"
                   onClick={() => setSourceTab("image")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${sourceTab === "image" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
+                    sourceTab === "image"
+                      ? "bg-background shadow-sm text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <ImageIcon className="w-4 h-4" />
                   Gambar Produk
@@ -378,7 +423,7 @@ export default function GeneratorPage() {
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={handleFileDrop}
                       onClick={() => fileInputRef.current?.click()}
-                      className={`border-2 border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center text-center hover:border-primary/50 transition-colors cursor-pointer ${selectedFile ? 'bg-primary/5 border-primary/50' : 'bg-background/50'} group`}
+                      className={`border-2 border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center text-center hover:border-primary/50 transition-colors cursor-pointer ${selectedFile ? "bg-primary/5 border-primary/50" : "bg-background/50"} group`}
                     >
                       <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors overflow-hidden">
                         {selectedFile ? (
@@ -388,9 +433,13 @@ export default function GeneratorPage() {
                         )}
                       </div>
                       <p className="text-base font-medium mb-1">
-                        {selectedFile ? selectedFile.name : "Klik untuk unggah atau seret kesini"}
+                        {selectedFile
+                          ? selectedFile.name
+                          : "Klik untuk unggah atau seret kesini"}
                       </p>
-                      <p className="text-sm text-muted-foreground">PNG, JPG, JPEG (Maks. 5MB) - Diproses secara lokal</p>
+                      <p className="text-sm text-muted-foreground">
+                        PNG, JPG, JPEG (Maks. 5MB) - Diproses secara lokal
+                      </p>
                     </div>
                   </div>
                 )}
@@ -404,7 +453,10 @@ export default function GeneratorPage() {
                   <Sparkles className="w-4 h-4 text-primary" />
                   Gaya Bahasa
                 </label>
-                <select name="style" className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer">
+                <select
+                  name="style"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer"
+                >
                   <option>Santai & Gaul (Gen-Z)</option>
                   <option>Hard Selling (FOMO)</option>
                   <option>Storytelling (Bercerita)</option>
@@ -430,7 +482,10 @@ export default function GeneratorPage() {
                   <Users className="w-4 h-4 text-primary" />
                   Target Audiens
                 </label>
-                <select name="targetAudience" className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer">
+                <select
+                  name="targetAudience"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer"
+                >
                   <option>Semua Gender (Umum)</option>
                   <option>Khusus Perempuan</option>
                   <option>Khusus Laki-laki</option>
@@ -445,42 +500,78 @@ export default function GeneratorPage() {
                 {hookOnly ? "Jumlah Hook" : "Panjang Naskah"}
               </label>
               {hookOnly ? (
-                <select key="select-hook" name="duration" className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer">
+                <select
+                  key="select-hook"
+                  name="duration"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer"
+                >
                   <option>10 Hook</option>
                   <option>30 Hook</option>
                   <option>50 Hook</option>
                 </select>
               ) : (
-                <select key="select-duration" name="duration" className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer">
-                  <option value="short">Hasil Pendek</option>
-                  <option value="standard">Hasil Standar</option>
-                  <option value="medium">Hasil Menengah</option>
-                  <option value="detailed">Hasil Mendetail</option>
+                <select
+                  key="select-duration"
+                  name="duration"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer"
+                >
+                  <option value="15">15 Detik</option>
+                  <option value="30">30 Detik</option>
+                  <option value="60">60 Detik</option>
+                  <option value="90">90 Detik</option>
                 </select>
               )}
             </div>
 
             {/* 5. MODES (TOGGLES) */}
             <div className="space-y-4 pt-4 border-t border-border">
-
-              <label className={`flex items-center justify-between group ${hookOnly ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                <span className="font-medium group-hover:text-primary transition-colors">Panduan Visual B-Roll</span>
-                <input type="checkbox" name="bRoll" checked={bRoll} onChange={(e) => !hookOnly && setBRoll(e.target.checked)} disabled={hookOnly} className="sr-only peer" />
+              <label
+                className={`flex items-center justify-between group ${hookOnly ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                <span className="font-medium group-hover:text-primary transition-colors">
+                  Panduan Visual B-Roll
+                </span>
+                <input
+                  type="checkbox"
+                  name="bRoll"
+                  checked={bRoll}
+                  onChange={(e) => !hookOnly && setBRoll(e.target.checked)}
+                  disabled={hookOnly}
+                  className="sr-only peer"
+                />
                 <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
               </label>
 
-              <label className={`flex items-center justify-between group ${hookOnly ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                <span className="font-medium group-hover:text-primary transition-colors">Mode Roleplay (Percakapan Q&A)</span>
-                <input type="checkbox" name="roleplay" checked={roleplay} onChange={(e) => !hookOnly && setRoleplay(e.target.checked)} disabled={hookOnly} className="sr-only peer" />
+              <label
+                className={`flex items-center justify-between group ${hookOnly ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                <span className="font-medium group-hover:text-primary transition-colors">
+                  Mode Roleplay (Percakapan Q&A)
+                </span>
+                <input
+                  type="checkbox"
+                  name="roleplay"
+                  checked={roleplay}
+                  onChange={(e) => !hookOnly && setRoleplay(e.target.checked)}
+                  disabled={hookOnly}
+                  className="sr-only peer"
+                />
                 <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
               </label>
 
               <label className="flex items-center justify-between cursor-pointer group">
-                <span className="font-medium group-hover:text-primary transition-colors">Mode Hanya Hook (Anti-Scroll)</span>
-                <input type="checkbox" name="hookOnly" checked={hookOnly} onChange={(e) => setHookOnly(e.target.checked)} className="sr-only peer" />
+                <span className="font-medium group-hover:text-primary transition-colors">
+                  Mode Hanya Hook (Anti-Scroll)
+                </span>
+                <input
+                  type="checkbox"
+                  name="hookOnly"
+                  checked={hookOnly}
+                  onChange={(e) => setHookOnly(e.target.checked)}
+                  className="sr-only peer"
+                />
                 <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
               </label>
-
             </div>
 
             <button
@@ -496,7 +587,9 @@ export default function GeneratorPage() {
               ) : (
                 <>
                   <Sparkles className="w-6 h-6" />
-                  Generate Script ({sourceTab === "name" ? 1 : sourceTab === "url" ? 2 : 3} Kredit)
+                  Generate Script (
+                  {sourceTab === "name" ? 1 : sourceTab === "url" ? 2 : 3}{" "}
+                  Kredit)
                 </>
               )}
             </button>
@@ -506,10 +599,8 @@ export default function GeneratorPage() {
 
       {/* Right Column - Result Area & History */}
       <div className="w-full lg:w-1/2 flex flex-col h-full pb-8 gap-6">
-
         {/* Result Area */}
         <div className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-lg flex flex-col relative overflow-hidden flex-shrink-0 min-h-[400px]">
-
           {/* Header */}
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -522,14 +613,22 @@ export default function GeneratorPage() {
                   onClick={handleCopyCaption}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors border border-border"
                 >
-                  {isCopiedCaption ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  {isCopiedCaption ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                   Salin Caption
                 </button>
                 <button
                   onClick={handleCopyText}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-background hover:bg-muted text-foreground rounded-lg transition-colors border border-border shadow-sm"
                 >
-                  {isCopiedText ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  {isCopiedText ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                   Salin Text
                 </button>
               </div>
@@ -541,15 +640,21 @@ export default function GeneratorPage() {
             {!result && !isGenerating && (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center opacity-50">
                 <Sparkles className="w-12 h-12 mb-4 text-muted-foreground" />
-                <p className="text-lg font-medium">Naskah AI akan muncul di sini</p>
-                <p className="text-sm">Isi form di samping dan klik generate untuk memulai.</p>
+                <p className="text-lg font-medium">
+                  Naskah AI akan muncul di sini
+                </p>
+                <p className="text-sm">
+                  Isi form di samping dan klik generate untuk memulai.
+                </p>
               </div>
             )}
 
             {isGenerating && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm z-10 rounded-xl">
                 <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-lg font-medium animate-pulse text-primary">Meracik Naskah & Caption...</p>
+                <p className="text-lg font-medium animate-pulse text-primary">
+                  Meracik Naskah & Caption...
+                </p>
               </div>
             )}
 
@@ -581,7 +686,8 @@ export default function GeneratorPage() {
                 <div className="flex-1 bg-muted/30 border border-border rounded-2xl p-5 mb-4 max-h-[300px] overflow-y-auto custom-scrollbar text-foreground leading-relaxed text-[15px] whitespace-pre-wrap">
                   {getActiveText() || (
                     <span className="text-muted-foreground italic text-sm">
-                      Konten untuk versi ini tidak tersedia atau terpotong saat proses generate. Coba jalankan kembali.
+                      Konten untuk versi ini tidak tersedia atau terpotong saat
+                      proses generate. Coba jalankan kembali.
                     </span>
                   )}
                 </div>
@@ -604,7 +710,10 @@ export default function GeneratorPage() {
               Riwayat Terakhir
             </h3>
             {histories.length > 0 && (
-              <button onClick={handleDeleteHistory} className="text-xs text-destructive hover:text-destructive/80 flex items-center gap-1 font-medium transition-colors">
+              <button
+                onClick={handleDeleteHistory}
+                className="text-xs text-destructive hover:text-destructive/80 flex items-center gap-1 font-medium transition-colors"
+              >
                 <Trash2 className="w-3 h-3" />
                 Hapus Riwayat
               </button>
@@ -622,7 +731,10 @@ export default function GeneratorPage() {
               </div>
             ) : (
               histories.map((hist) => (
-                <div key={hist.id} className="bg-background border border-border rounded-xl p-4 flex items-center justify-between group hover:border-primary/30 transition-colors">
+                <div
+                  key={hist.id}
+                  className="bg-background border border-border rounded-xl p-4 flex items-center justify-between group hover:border-primary/30 transition-colors"
+                >
                   <div className="flex-1 min-w-0 pr-4">
                     <h4 className="font-semibold text-sm truncate text-foreground">
                       {hist.productName || "Upload Gambar"}
@@ -654,7 +766,6 @@ export default function GeneratorPage() {
             )}
           </div>
         </div>
-
       </div>
 
       {/* Topup Modal */}
@@ -667,7 +778,8 @@ export default function GeneratorPage() {
             </div>
             <h3 className="text-2xl font-bold mb-3">Kredit Anda Habis!</h3>
             <p className="text-muted-foreground mb-8 text-[15px] leading-relaxed">
-              Maaf, Anda tidak memiliki sisa kredit yang cukup untuk meracik naskah ini. Silakan isi ulang kredit Anda untuk melanjutkan.
+              Maaf, Anda tidak memiliki sisa kredit yang cukup untuk meracik
+              naskah ini. Silakan isi ulang kredit Anda untuk melanjutkan.
             </p>
             <div className="flex flex-col gap-3">
               <Link

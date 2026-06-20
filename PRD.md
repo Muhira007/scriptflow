@@ -22,10 +22,10 @@ As an AI coding agent, strictly follow these rules when developing this project:
 *   **Database:** PostgreSQL
 *   **ORM:** Drizzle ORM (`drizzle-orm`, `drizzle-kit`)
 *   **Authentication:** Better Auth (`better-auth`) with Drizzle adapter.
-*   **AI Provider:** Google Gemini API / OpenAI API (configurable via `.env`).
+*   **AI Providers:** Google Gemini API + DeepSeek API (selectable via Admin Settings).
 *   **Web Scraping:** Cheerio (`cheerio`) for parsing product URLs.
 *   **Payment Gateway:** Midtrans Node.js SDK (`midtrans-client`).
-*   **Storage:** Supabase Storage (or equivalent for manual transfer proof upload).
+*   **Storage:** Local filesystem (`public/uploads/`) for manual transfer proof upload.
 
 ---
 
@@ -53,6 +53,20 @@ The database must include the following core tables:
 *   `createdAt` (timestamp)
 
 *(Include standard Better Auth tables: `session`, `account`, `verification`).*
+
+### `generation_history` table (Custom for tracking)
+*   `id` (text, pk, auto UUID)
+*   `userId` (text, fk -> users.id)
+*   `sourceType` (text) -> "image", "url", "name"
+*   `productName` (text, nullable)
+*   `content` (text) -> The generated AI script
+*   `inputTokens` (integer)
+*   `outputTokens` (integer)
+*   `createdAt` (timestamp)
+
+### `app_settings` table (Key-Value config)
+*   `key` (text, pk)
+*   `value` (text)
 
 ---
 
