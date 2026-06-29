@@ -34,7 +34,7 @@ export default function Sidebar() {
             <Mic className="w-5 h-5 text-white" />
           </div>
           <span className="font-extrabold text-2xl tracking-tight text-foreground flex items-center">
-            VOGen<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">.ai</span>
+            ScriptFlow
           </span>
         </Link>
       </div>

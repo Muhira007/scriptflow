@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VOGen.ai - AI Video Script & Voiceover Generator",
+  title: "ScriptFlow - AI Video Script & Voiceover Generator",
   description: "Generate viral TikTok/Reels scripts and premium voiceovers from any product URL instantly.",
 };
 

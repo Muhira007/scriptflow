@@ -99,21 +99,21 @@ export default async function AdminOverviewPage() {
   return (
     <div className="flex flex-col gap-8 animate-fade-in-up">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Admin Overview</h1>
-        <p className="text-muted-foreground">High-level metrics and system status.</p>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Admin Overview</h1>
+        <p className="text-muted-foreground text-sm md:text-base">High-level metrics and system status.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           const isAction = stat.title === "Pending Approvals" && pendingApprovals > 0;
           return (
-            <div key={index} className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="bg-primary/10 p-3 rounded-xl">
-                  <Icon className="w-6 h-6 text-primary" />
+            <div key={index} className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="bg-primary/10 p-2 sm:p-3 rounded-xl">
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
-                <span className={`text-sm font-medium ${
+                <span className={`text-xs sm:text-sm font-medium ${
                   isAction
                     ? "text-amber-500"
                     : stat.change.includes("Completed") || stat.change.includes("All clear")
@@ -123,8 +123,8 @@ export default async function AdminOverviewPage() {
                   {stat.change}
                 </span>
               </div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
-              <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground">{stat.value}</p>
             </div>
           );
         })}
@@ -133,7 +133,7 @@ export default async function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-sm min-h-[400px]">
           <h3 className="font-semibold text-lg mb-4">Revenue Overview</h3>
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-full text-muted-foreground border-2 border-dashed border-border rounded-xl">
             Chart Placeholder
           </div>
         </div>
@@ -144,17 +144,17 @@ export default async function AdminOverviewPage() {
               <p className="text-sm text-muted-foreground text-center py-4">No users yet.</p>
             ) : (
               recentSignups.map((u) => (
-                <div key={u.id} className="flex items-center justify-between">
+                <div key={u.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                       <Users className="w-5 h-5 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{u.name}</p>
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{u.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground">{timeAgo(u.createdAt)}</span>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">{timeAgo(u.createdAt)}</span>
                 </div>
               ))
             )}

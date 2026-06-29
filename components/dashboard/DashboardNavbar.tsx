@@ -78,7 +78,7 @@ export default function DashboardNavbar() {
             <Mic className="w-5 h-5 text-primary" />
           </div>
           <span className="font-bold text-xl tracking-tight text-foreground">
-            VOGen<span className="text-primary">.ai</span>
+            ScriptFlow
           </span>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function DashboardNavbar() {
                 <Mic className="w-6 h-6 text-primary" />
               </div>
               <span className="font-bold text-2xl tracking-tight text-foreground">
-                VOGen<span className="text-primary">.ai</span>
+                ScriptFlow
               </span>
             </Link>
             <button 

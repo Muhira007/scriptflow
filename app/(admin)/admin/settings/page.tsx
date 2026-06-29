@@ -93,16 +93,9 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 animate-fade-in-up max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">System Settings</h1>
-        <p className="text-muted-foreground">
-          Manage application configurations, API keys, and security.
-        </p>
-      </div>
-
+    <>
       {message && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed top-20 bottom-0 left-0 right-0 md:left-64 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-card border border-border rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center gap-4 animate-scale-in">
             <div
               className={`p-4 rounded-full ${
@@ -135,9 +128,17 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      <div className="grid gap-8">
-        {/* AI Configuration Section */}
-        <div className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-sm">
+      <div className="flex flex-col gap-8 animate-fade-in-up max-w-4xl">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">System Settings</h1>
+          <p className="text-muted-foreground">
+            Manage application configurations, API keys, and security.
+          </p>
+        </div>
+
+        <div className="grid gap-8">
+          {/* AI Configuration Section */}
+          <div className="bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-6 border-b border-border pb-4">
             <div className="bg-primary/10 p-2 rounded-lg">
               <KeyRound className="w-5 h-5 text-primary" />
@@ -526,7 +527,8 @@ export default function AdminSettingsPage() {
             Save Configuration
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
